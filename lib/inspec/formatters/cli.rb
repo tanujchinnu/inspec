@@ -4,7 +4,6 @@ module Inspec
       RSpec::Core::Formatters.register self, :close, :dump_summary, :stop
       case RUBY_PLATFORM
       when /windows|mswin|msys|mingw|cygwin/
-    
         # Most currently available Windows terminals have poor support
         # for ANSI extended colors
         COLORS = {
@@ -60,8 +59,108 @@ module Inspec
       MULTI_TEST_CONTROL_SUMMARY_MAX_LEN = 60
 
       def close(_notification)
-        puts "CLI output! woohoo!"
-        puts run_data
+        output.puts ""
+
+        run_data[:profiles].each do |profile|
+          print_profile_header(profile)
+          print_standard_control_results(profile)
+          print_anonymous_control_results(profile)
+        end
+
+        print_profile_summary
+        print_tests_summary
+      end
+
+      private
+
+      def print_profile_header(profile)
+        output.puts "Profile: #{format_profile_name(profile)}"
+        output.puts "Version: #{profile[:version] || '(not specified)'}"
+        output.puts "Target: #{format_target}" unless format_target.nil?
+        output.puts ""
+      end
+
+      def print_standard_control_results(profile)
+        standard_controls_from_profile(profile).each do |control|
+        end
+      end
+
+      def print_anonymous_control_results(profile)
+        anonymous_controls_from_profile(profile).each do |control|
+        end
+      end
+
+      def format_profile_name(profile)
+        if profile[:title].nil?
+          "#{profile[:name] || 'unknown'}"
+        else
+          "#{profile[:title]} (#{profile[:name] || 'unknown'})"
+        end
+      end
+
+      def format_target
+        return if @backend.nil?
+
+        connection = @backend.backend
+        connection.respond_to?(:uri) ? connection.uri : nil
+      end
+
+      def print_profile_summary
+        summary = profile_summary
+        return unless summary['total'] > 0
+    
+        success_str = summary['passed'] == 1 ? '1 successful control' : "#{summary['passed']} successful controls"
+        failed_str  = summary['failed']['total'] == 1 ? '1 control failure' : "#{summary['failed']['total']} control failures"
+        skipped_str = summary['skipped'] == 1 ? '1 control skipped' : "#{summary['skipped']} controls skipped"
+    
+        success_color = summary['passed'] > 0 ? 'passed' : 'no_color'
+        failed_color = summary['failed']['total'] > 0 ? 'failed' : 'no_color'
+        skipped_color = summary['skipped'] > 0 ? 'skipped' : 'no_color'
+    
+        s = format('Profile Summary: %s, %s, %s',
+                   format_with_color(success_color, success_str),
+                   format_with_color(failed_color, failed_str),
+                   format_with_color(skipped_color, skipped_str),
+                  )
+        output.puts(s) if summary['total'] > 0
+      end
+
+      def print_tests_summary
+        summary = tests_summary
+    
+        failed_str = summary['failed'] == 1 ? '1 failure' : "#{summary['failed']} failures"
+    
+        success_color = summary['passed'] > 0 ? 'passed' : 'no_color'
+        failed_color = summary['failed'] > 0 ? 'failed' : 'no_color'
+        skipped_color = summary['skipped'] > 0 ? 'skipped' : 'no_color'
+    
+        s = format('Test Summary: %s, %s, %s',
+                   format_with_color(success_color, "#{summary['passed']} successful"),
+                   format_with_color(failed_color, failed_str),
+                   format_with_color(skipped_color, "#{summary['skipped']} skipped"),
+                  )
+    
+        output.puts(s)
+      end
+
+
+      def format_with_color(color_name, text)
+        return text unless RSpec.configuration.color
+        return text unless COLORS.key?(color_name)
+    
+        "#{COLORS[color_name]}#{text}#{COLORS['reset']}"
+      end
+
+      def standard_controls_from_profile(profile)
+        profile[:controls].select { |c| !is_anonymous_control?(c) }
+      end
+
+      def anonymous_controls_from_profile(profile)
+        profile[:controls].select { |c| is_anonymous_control?(c) }
+      end
+
+      def is_anonymous_control?(control)
+        control[:id].start_with?('(generated from ')
       end
     end
   end

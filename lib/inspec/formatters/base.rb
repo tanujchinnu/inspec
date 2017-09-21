@@ -6,8 +6,7 @@ module Inspec
     class Base < RSpec::Core::Formatters::BaseFormatter
       RSpec::Core::Formatters.register self, :close, :dump_summary, :stop
 
-      attr_accessor :run_data
-      attr_writer :backend
+      attr_accessor :backend, :run_data
 
       def initialize(output)
         super(output)
@@ -46,6 +45,7 @@ module Inspec
         # output will have 3 control entries, each one with the same control id
         # and different test results. An rspec example maps to an inspec test.
         run_data[:controls] = notification.examples.map do |example|
+          require 'pry'; binding.pry
           format_example(example).tap do |hash|
             e = example.exception
             next unless e
@@ -115,6 +115,8 @@ module Inspec
           code_desc: code_description,
           run_time: example.execution_result.run_time,
           start_time: example.execution_result.started_at.to_s,
+          resource_title: example.metadata[:described_class],
+          expectation_message: format_expectation_message(example),
         }
     
         unless (pid = example.metadata[:profile_id]).nil?
@@ -130,13 +132,28 @@ module Inspec
         res
       end
 
+      def format_expectation_message(example)
+        if example.metadata[:example_group][:description_args].first == example.metadata[:example_group][:described_class]
+          example.metadata[:description]
+        else
+          "#{example.metadata[:example_group][:description]} #{example.metadata[:description]}"
+        end
+      end
+
       def os(field)
         return nil if @backend.nil?
         @backend.os.params[field]
       end
     
       def all_unique_controls
-        Array(@all_controls).uniq
+        return @unique_controls unless @unique_controls.nil?
+
+        @unique_controls = Set.new
+        profiles_info.each do |profile|
+          profile[:controls].map { |control| @unique_controls.add(control) }
+        end
+
+        @unique_controls
       end
     
       def profile_summary
@@ -185,6 +202,7 @@ module Inspec
     
       def tests_summary
         return @tests_summary unless @tests_summary.nil?
+
         total = 0
         failed = 0
         skipped = 0

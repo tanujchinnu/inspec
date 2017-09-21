@@ -7,6 +7,9 @@ module Inspec
       
       def close(_notification)
         output.write run_data.to_json
+
+        # TODO - curate this data
+        # TODO - strip resource title and expectation message out of each result
       end
     end
   end
