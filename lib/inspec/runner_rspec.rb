@@ -4,7 +4,6 @@
 
 require 'rspec/core'
 require 'rspec/its'
-require 'inspec/rspec_json_formatter'
 
 # There be dragons!! Or borgs, or something...
 # This file and all its contents cannot be unit-tested. both test-suits
@@ -33,7 +32,7 @@ module Inspec
     # @return [nil]
     def add_profile(profile)
       RSpec.configuration.formatters
-           .find_all { |c| c.is_a? InspecRspecJson }
+           .find_all { |c| c.is_a?(Inspec::Formatters::Base) }
            .each do |fmt|
         fmt.add_profile(profile)
       end
@@ -45,7 +44,7 @@ module Inspec
     # @return [nil]
     def backend=(backend)
       RSpec.configuration.formatters
-           .find_all { |c| c.is_a? InspecRspecJson }
+           .find_all { |c| c.is_a?(Inspec::Formatters::Base) }
            .each do |fmt|
         fmt.backend = backend
       end
@@ -99,11 +98,11 @@ module Inspec
     private
 
     FORMATTERS = {
-      'json-min' => 'InspecRspecMiniJson',
-      'json' => 'InspecRspecJson',
-      'json-rspec' => 'InspecRspecVanilla',
-      'cli' => 'InspecRspecCli',
-      'junit' => 'InspecRspecJUnit',
+      'json-min' => 'Inspec::Formatters::JsonMin',
+      'json' => 'Inspec::Formatters::Json',
+      'json-rspec' => 'Inspec::Formatters::RspecJson',
+      'cli' => 'Inspec::Formatters::CLI',
+      'junit' => 'Inspec::Formatters::Junit',
     }.freeze
 
     # Configure the output formatter and stream to be used with RSpec.
