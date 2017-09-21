@@ -6,11 +6,6 @@ module Inspec
     class Base < RSpec::Core::Formatters::BaseFormatter
       RSpec::Core::Formatters.register self, :close, :dump_summary, :stop
 
-      IMPACT_SCORES = {
-        critical: 0.7,
-        major: 0.4,
-      }
-
       attr_accessor :backend, :run_data
 
       def initialize(output)
