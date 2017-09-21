@@ -45,7 +45,6 @@ module Inspec
         # output will have 3 control entries, each one with the same control id
         # and different test results. An rspec example maps to an inspec test.
         run_data[:controls] = notification.examples.map do |example|
-          require 'pry'; binding.pry
           format_example(example).tap do |hash|
             e = example.exception
             next unless e

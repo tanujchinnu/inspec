@@ -82,6 +82,17 @@ module Inspec
 
       def print_standard_control_results(profile)
         standard_controls_from_profile(profile).each do |control|
+          output.puts format_control_header(control)
+          control[:results].each do |result|
+            output.puts format_result(result)
+          end
+          # print_line(
+          #   color:      control.summary_indicator,
+          #   indicator:  INDICATORS[control.summary_indicator] || INDICATORS['unknown'],
+          #   summary:    format_lines(control.summary, INDICATORS['empty']),
+          #   id:         "#{control.id}: ",
+          #   profile:    control.profile_id,
+          # )      
         end
       end
 
@@ -103,6 +114,13 @@ module Inspec
 
         connection = @backend.backend
         connection.respond_to?(:uri) ? connection.uri : nil
+      end
+
+      def format_control_header(control)
+        " [INDICATOR] #{control[:id]}: #{control[:title]} ([CONTROL SUMMARY])"
+      end
+
+      def format_result(result)
       end
 
       def print_profile_summary
@@ -161,6 +179,9 @@ module Inspec
 
       def is_anonymous_control?(control)
         control[:id].start_with?('(generated from ')
+      end
+
+      def control_status(control)
       end
     end
   end
