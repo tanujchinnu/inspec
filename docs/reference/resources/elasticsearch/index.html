@@ -1,0 +1,317 @@
+<!DOCTYPE html><html><head><meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" /><meta charset="utf-8" /><meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" /><link href="/favicon.png" rel="icon" type="image/png" /><link href="/favicon.ico" rel="icon" /><title>The Elasticsearch Resource</title><link href="css/inspec_tutorial.css" rel="stylesheet" type="text/css" /><link href="/stylesheets/site.css" rel="stylesheet" /></head><body class="docs docs_reference docs_reference_resources docs_reference_resources_elasticsearch docs_reference_resources_elasticsearch_index"><script>gm_session_id = 'inspecGlobalMessage8';</script><div class="container"><nav id="main-nav"><progress value="0"></progress><div id="main-nav-ctas"><a class="main-nav--logo" href="/"><img onerror="this.src='/images/inspec-by-chef-logo.png'" src="/images/inspec-by-chef-logo.svg" /></a><i class="fa fa-bars main-nav--toggle strict-right mobile-show"></i><ul class="main-nav--links"><li class="main-nav--link"><a href="/tutorials" class="" <span class="main-nav--link-text">Tutorials</span></a></li><li class="main-nav--link"><a href="/docs" class="" <span class="main-nav--link-text">Docs</span></a></li><li class="main-nav--link"><a href="/community" class="" <span class="main-nav--link-text">Community</span></a></li><li class="main-nav--link"><a href="https://github.com/chef/inspec"><i class="fa fa-github-alt"></i><span class="main-nav--link-text">Github</span></a></li><li class="main-nav--link nav-cta hide-for-small-only"><a class="btn try-demo" href="/tutorial">Try the Demo</a></li><li class="main-nav--link nav-cta"><a class="btn" href="/downloads"><i class="fa fa-cloud-download"></i><span class="main-nav--link-text">Download</span></a></li></ul></div></nav><main id="main-content"><!--animated banner--><header class="child-h blue-gradient margin-top-offset"><div id="particles-second"><canvas class="particles-js-canvas-el" /></div><div class="purp-shade"><div class="row relative-top searchbar"><div class="column columns"><form action="/docs/search/" class="main-sidebar--search" method="get"><input class="st-default-search-input" name="q" placeholder="Search Documentation" type="text" /><button action="/docs/search/" class="search shadow" method="get"><img src="/images/community/search.svg" /></button></form></div></div></div></header><div class="row margin-both"><column class="columns large-3 medium-3" id="sidebar"><ul class="main-sidebar--links"><li class="main-sidebar--link"><small>Getting Started</small><ul class="main-sidebar--list no-bullet"><li class="main-sidebar--list--item--a"><a href="/docs">Overview</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="https://downloads.chef.io/inspec">Get InSpec</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/tutorials">Tutorials</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/inspec_and_friends">InSpec and friends</a><i class="focus strict-right">&GreaterGreater; </i></li></ul></li><li class="main-sidebar--link"><small>Reference</small><ul class="main-sidebar--list no-bullet"><li class="main-sidebar--list--item--a"><a href="/docs/reference/cli">inspec executable</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/profiles">Profiles</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/resources">Resources</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/matchers">Matchers</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/dsl_inspec">InSpec DSL</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/dsl_resource">Resource DSL</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/plugin_kitchen_inspec">kitchen-inspec</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/shell">inspec shell</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/habitat">Habitat Integration</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/ruby_usage">Ruby usage</a><i class="focus strict-right">&GreaterGreater; </i></li><li class="main-sidebar--list--item--a"><a href="/docs/reference/migration">Migration from Serverspec</a><i class="focus strict-right">&GreaterGreater; </i></li></ul></li></ul></column><column class="columns large-9 medium-9"><h1 id="elasticsearch">elasticsearch</h1>
+
+<p>The <code>elasticsearch</code> resource allows testing of a node status against a running
+Elasticsearch cluster. InSpec will retrieve the node list from the cluster node URL
+provided (defaults to <code>http://localhost:9200</code>) and provide the ability to query
+a variety of settings and statuses.</p>
+
+<h2 id="syntax">Syntax</h2>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('property') { should cmp 'value' }
+end
+</code></pre></div>
+<p>The <code>elasticsearch</code> resource accepts a number of optional values:</p>
+
+<ul>
+<li><code>url</code>: the top-level URL of an Elasticsearch node in the cluster. If your Elasticsearch installation is not served out of the top-level directory at the host, be sure to specific the full URL; for example: <code>http://my-load-balancer/elasticsearch</code>. Default: <code>http://localhost:9200</code></li>
+<li><code>username</code>: a username to use to log in with HTTP-Basic authentication. If <code>username</code> is provided, a <code>password</code> must also be provided.</li>
+<li><code>password</code>: a password to use to log in with HTTP-Basic authentication. If <code>password</code> is provided, a <code>username</code> must also be provided.</li>
+<li><code>ssl_verify</code>: if <code>false</code>, SSL certificate validation will be disabled. Default: <code>true</code></li>
+</ul>
+
+<p>In addition, the <code>elasticsearch</code> resource allows for filtering the nodes returned by property before executing the tests:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch.where { node_name == 'one-off-node' } do
+  its('version') { should eq '1.2.3' }
+end
+
+describe elasticsearch.where { process.mlockall == false } do
+  its('count') { should cmp 0 }
+end
+</code></pre></div>
+<p>To simply check if nodes exist that match the criteria, use the <code>exist</code> matcher:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch.where { cluster_name == 'my_cluster' } do
+  it { should exist }
+end
+</code></pre></div>
+<h2 id="supported-properties">Supported Properties</h2>
+
+<p>The following properties are provided:</p>
+
+<ul>
+<li>build_hash</li>
+<li>cluster_name</li>
+<li>host</li>
+<li>http</li>
+<li>ingest</li>
+<li>ip</li>
+<li>jvm</li>
+<li>module_list</li>
+<li>modules</li>
+<li>node_name</li>
+<li>node_id</li>
+<li>os</li>
+<li>plugin_list</li>
+<li>plugins</li>
+<li>process</li>
+<li>roles</li>
+<li>settings</li>
+<li>total<em>indexing</em>buffer</li>
+<li>transport</li>
+<li>transport_address</li>
+<li>version</li>
+</ul>
+
+<p>Since the <code>elasticsearch</code> resource is meant for use on a cluster, each property will return an array of the values for each node that matches any provided search criteria. Using InSpec&rsquo;s <code>cmp</code> matcher will help avoid any issues when trying to compare values for when a single match is returned (i.e. when the cluster only contains a single node, or the <code>where</code> filter criteria provided only returns a single node).</p>
+
+<h2 id="property-examples">Property Examples</h2>
+
+<h3 id="build_hash">build_hash</h3>
+
+<p>Returns the build hash for each of the nodes.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('build_hash') { should cmp 'b2f0c09' }
+end
+</code></pre></div>
+<h3 id="cluster_name">cluster_name</h3>
+
+<p>Returns the cluster names of each of the nodes.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('cluster_name') { should cmp 'my_cluster' }
+end
+</code></pre></div>
+<h3 id="host">host</h3>
+
+<p>Returns the hostname of each of the nodes. This may return an IP address of the node is not properly performing DNS resolution or has no hostname set.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('host') { should cmp 'my.hostname.mycompany.biz' }
+end
+</code></pre></div>
+<h3 id="http">http</h3>
+
+<p>Returns a hash of HTTP-related settings for each of the nodes. In this example, the <code>first</code> method is used to grab only the first node&rsquo;s HTTP-related info and is a way of removing the item from the Array if only one node is being queried.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('http.first.max_content_length_in_bytes') { should cmp 123456 }
+end
+</code></pre></div>
+<h3 id="ingest">ingest</h3>
+
+<p>Returns ingest-related settings and capabilities, such as available processors.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('ingest.first.processors.count') { should be &gt;= 1 }
+end
+</code></pre></div>
+<h3 id="ip">ip</h3>
+
+<p>Returns the IP address of each of the nodes.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('ip') { should cmp '192.168.1.100' }
+end
+</code></pre></div>
+<h3 id="jvm">jvm</h3>
+
+<p>Returns Java Virtual Machine related parameters for each of the nodes.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('jvm.first.version') { should cmp '1.8.0_141' }
+end
+</code></pre></div>
+<h3 id="module_list">module_list</h3>
+
+<p>Returns a list of enabled modules for each node in the cluster. For more additional information about each module, use the <code>modules</code> property.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('module_list.first') { should include 'my_module' }
+end
+</code></pre></div>
+<h3 id="modules">modules</h3>
+
+<p>Returns detailed information about each enabled module for each node in the cluster. For a succint list of the names of each of the modules enabled, use the <code>module_list</code> property. This example uses a bit of additional Ruby to find a specific module and assert a value.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>modules = elasticsearch.modules.first
+lang_groovy_module = modules.find { |mod| mod.name == 'lang-groovy' }
+
+describe 'lang-groovy module version' do
+  subject { lang_groovy_module }
+  its('version') { should cmp '5.5.2' }
+end
+</code></pre></div>
+<h3 id="node_name">node_name</h3>
+
+<p>Returns the node name for each node in the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('node_name') { should cmp 'node1' }
+end
+</code></pre></div>
+<h3 id="node_id">node_id</h3>
+
+<p>Returns the node IDs of each of the nodes in the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('node_id') { should include 'my_node_id' }
+end
+</code></pre></div>
+<h3 id="os">os</h3>
+
+<p>Returns OS-related information about each node in the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('os.first.arch') { should cmp 'amd64' }
+end
+</code></pre></div>
+<h3 id="plugin_list">plugin_list</h3>
+
+<p>Returns a list of enabled plugins for each node in the cluster. For more additional information about each plugin, use the <code>plugins</code> property.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('plugin_list.first') { should include 'my_plugin' }
+end
+</code></pre></div>
+<h3 id="plugins">plugins</h3>
+
+<p>Returns detailed information about each enabled plugin for each node in the cluster. For a succint list of the names of each of the plugins enabled, use the <code>plugin_list</code> property. This example uses a bit of additional Ruby to find a specific plugin and assert a value.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>plugins = elasticsearch.plugins.first
+my_plugin = plugins.find { |plugin| plugin.name == 'my_plugin' }
+
+describe 'my_plugin plugin version' do
+  subject { my_plugin }
+  its('version') { should cmp '1.2.3' }
+end
+</code></pre></div>
+<h3 id="process">process</h3>
+
+<p>Returns process information for each node in the cluster, such as the process ID.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('process.first.mlockall') { should cmp true }
+end
+</code></pre></div>
+<h3 id="roles">roles</h3>
+
+<p>Returns the role for each of the nodes in the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch.where { node_name == 'my_master_node' } do
+  it { should include 'master' }
+end
+</code></pre></div>
+<h3 id="settings">settings</h3>
+
+<p>Returns all the configuration settings for each node in the cluster. These settings usually include those set in the elasticsearch.yml as well as those set via <code>-Des.</code> or <code>-E</code> flags at startup. Use the <code>inspec shell</code> to explore the various setting keys that are available.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('settings.first.path.home') { should cmp '/usr/share/elasticsearch' }
+end
+</code></pre></div>
+<h3 id="totalindexingbuffer">total<em>indexing</em>buffer</h3>
+
+<p>Returns the total indexing buffer for each node in the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('total_indexing_buffer') { should cmp 123456 }
+end
+</code></pre></div>
+<h3 id="transport">transport</h3>
+
+<p>Returns transport-related settings for each node in the cluster, such as the bound and published addresses.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('transport.first.bound_address') { should cmp '1.2.3.4:9200' }
+end
+</code></pre></div>
+<h3 id="transport_address">transport_address</h3>
+
+<p>Returns the bound transport address for each node in the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('transport_address') { should cmp '1.2.3.4:9200' }
+end
+</code></pre></div>
+<h3 id="version">version</h3>
+
+<p>Returns the version of Elasticsearch running on each node of the cluster.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>describe elasticsearch do
+  its('version') { should cmp '5.5.2' }
+end
+</code></pre></div></column></div><script>// Swiftype JS code snippet
+(function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+(w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+})(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+_st('install','xzyJV6P7pgscygGyyTm8','2.0.0');
+// end Swiftype code snippet
+
+document.getElementsByClassName("st-default-search-input")[0].focus();</script></main></div><footer class="dark-bg" id="main-footer"><div class="strict-center" id="dlmsg"><img id="hex" src="/images/hexagon.svg" /><h3 class="t-white margin-top-xs txt-margin">See how it works in less than 10 minutes!</h3><div class="row margin-top-xs"><a class="btn t-white try-demo hide-for-small-only" href="/tutorial">Try the Demo</a><a class="btn t-white" href="https://downloads.chef.io/inspec"><i class="fa fa-cloud-download"></i><span>Download</span></a></div></div><div class="columns large-4 medium-4 mobile-hide"><ul class="footer--logos"><li><a class="footer--logo inspec" href="/"><img src="/images/inspec-by-chef-logo.png" /></a></li><li><a class="footer--logo chef" href="http://www.chef.io"><img src="/images/chef-logo.png" /></a></li></ul></div><div class="columns large-8 medium-8"><ul class="footer--links strict-right"><li><a class="footer--link" href="/legal/licensing">Licensing</a></li><li><a class="footer--link" href="/legal/terms-and-conditions">Terms &amp; Conditions</a></li><li><a class="footer--link" href="/legal/trademark-policy">Trademark Policy</a></li><li><a class="footer--link" href="/legal/privacy-policy">Privacy Policy</a></li></ul><div class="columns margin-both-xs mobile-show"><ul class="footer--logos"><li><a class="footer--logo inspec" href="/"><img src="/images/inspec-by-chef-logo.png" /></a></li><li><a class="footer--logo chef" href="http://www.chef.io"><img src="/images/chef-logo.png" /></a></li></ul></div></div><p class="strict-center clear"><small>&copy; Chef Software 2017</small></p></footer><script src="https://s3.amazonaws.com/menumaker/menumaker.min.js"></script><script src="scripts/inspec_tutorial.js"></script><script src="dist/inspec_tutorial.js"></script><div class="inspec-tutorial" hidden="true" inspec-tutorial="true">Loading</div><script src="/javascripts/all.js"></script><script>//initiate sticky sidebar from jquery.sticky.js
+
+ if (window.innerWidth > 640) { //don't fix on mobile
+   $('#sidebar').stick_in_parent();
+ }</script><script>//Parallax Text
+
+if (window.innerWidth > 900) { //don't parallax on tablet/mobile
+$(window).enllax(); //initiate parallax on larger screens
+}</script><script>//Code pop-up animation on homepage
+
+$('.code-trigger').click(function() {
+  $(this).toggleClass('turn-angle');
+  $('.code-pop').slideToggle(500);
+});</script><script>//Animate HR on scroll
+
+$(window).scroll(function() {
+
+var scroll = $(window).scrollTop();
+var objectSelect = $('#icon-trigger'); //parent that triggers scroll
+var objectPosition = objectSelect.offset().top;
+if (scroll > objectPosition) {
+$('hr.first').addClass('stretch')  //add class animate class to HR
+
+}
+});</script><script>//Animating progress bar for header
+
+$(document).ready(function(){
+
+var getMax = function(){
+    return $(document).height() - $(window).height();
+}
+
+var getValue = function(){
+    return $(window).scrollTop();
+}
+
+if('max' in document.createElement('progress')){
+    // Browser supports progress element
+    var progressBar = $('progress');
+
+    // Set the Max attr for the first time
+    progressBar.attr({ max: getMax() });
+
+    $(document).on('scroll', function(){
+        // On scroll only Value attr needs to be calculated
+        progressBar.attr({ value: getValue() });
+    });
+
+    $(window).resize(function(){
+        // On resize, both Max/Value attr needs to be calculated
+        progressBar.attr({ max: getMax(), value: getValue() });
+    });
+}
+else {
+    var progressBar = $('.progress-bar'),
+        max = getMax(),
+        value, width;
+
+    var getWidth = function(){
+        // Calculate width in percentage
+        value = getValue();
+        width = (value/max) * 100;
+        width = width + '%';
+        return width;
+    }
+
+    var setWidth = function(){
+        progressBar.css({ width: getWidth() });
+    }
+
+    $(document).on('scroll', setWidth);
+    $(window).on('resize', function(){
+        // Need to reset the Max attr
+        max = getMax();
+        setWidth();
+    });
+    }
+  });</script><script>$(document).foundation();
+$('.try-demo').click(function(event){
+  event.stopPropagation();
+  $('.inspec-tutorial').show()
+  window.dispatchEvent(new Event('resizeTerminal'));
+  $('.quit-inspec-tutorial').click(function(event){
+    event.stopPropagation();
+    $('.inspec-tutorial').hide()
+  })
+});</script><script src="/javascripts/segment.js"></script></body></html>
